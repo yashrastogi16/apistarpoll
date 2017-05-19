@@ -1,7 +1,7 @@
 from sqlalchemy.sql import func
 import datetime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker, relationship
+from sqlalchemy.orm import relationship
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 
 Base = declarative_base()
@@ -11,6 +11,7 @@ class Poll(Base):
 	id = Column(Integer, primary_key=True)
 	question = Column(String)
 	pub_date = Column(DateTime(timezone=True), default=func.now())
+	# Gives the flexibilty to access child table's object.
 	choice = relationship("Choice")
 
 class Choice(Base):

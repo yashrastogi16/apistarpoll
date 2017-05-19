@@ -2,12 +2,11 @@ import datetime
 from apistar import http
 from apistar.backends import SQLAlchemy
 from .models import Poll, Choice
-from sqlalchemy import update
 
 def welcome(name=None):
 	if name is None:
-		return {'message': 'Welcome to API Star!'}
-	return {'message': 'Welcome to API Star, %s!' % name}
+		return {'message': 'Welcome to API Star, django poll example!'}
+	return {'message': 'Welcome to API Star django poll example!, %s!' % name}
 
 def create_poll(db: SQLAlchemy, question: str):
 	session = db.session_class()
@@ -57,7 +56,6 @@ def create_choices(db: SQLAlchemy, poll_id: int, choice_text: str):
 	return {'choice_text': choice_text}
 
 def vote(db: SQLAlchemy, poll_id: int, choice_id: int):
-	import pdb; pdb.set_trace()
 	session = db.session_class()
 	poll = session.query(Poll).get(poll_id)
 	for option in poll.choice:
