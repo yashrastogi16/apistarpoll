@@ -2,6 +2,7 @@ import datetime
 from apistar import http
 from apistar.backends import SQLAlchemy
 from .models import Poll, Choice
+from sqlalchemy import update
 
 def welcome(name=None):
 	if name is None:
@@ -39,6 +40,7 @@ def polls_details(db: SQLAlchemy):
 		if poll.choice:
 			for choice in poll.choice:
 				choice_data = {}
+				choice_data['id'] = choice.id
 				choice_data['choice_text'] = choice.choice_text
 				choice_data['votes'] = choice.votes
 				cdata.append(choice_data)
@@ -53,6 +55,24 @@ def create_choices(db: SQLAlchemy, poll_id: int, choice_text: str):
 	session.add(choice)
 	session.commit()
 	return {'choice_text': choice_text}
+
+def vote(db: SQLAlchemy, poll_id: int, choice_id: int):
+	import pdb; pdb.set_trace()
+	session = db.session_class()
+	poll = session.query(Poll).get(poll_id)
+	for option in poll.choice:
+		if option.id == choice_id:
+			choice = session.query(Choice).get(choice_id)
+			temp = int(choice.votes)
+			temp += 1
+			choice.votes = temp
+			session.add(choice)
+			result = 'Vote Added'
+		else:
+			result = 'Wrong Choice'
+		session.commit()
+	return {'result': result}
+
 
 
 
