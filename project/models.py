@@ -1,9 +1,10 @@
 from sqlalchemy.sql import func
 import datetime
+from json import JSONEncoder
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey
 
-Base = declarative_base()
+Base = declarative_base(JSONEncoder)
 
 class Poll(Base):
 	__tablename__ = "Poll"

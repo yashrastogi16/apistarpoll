@@ -1,3 +1,6 @@
+import datetime
+import json
+from json import JSONEncoder
 from apistar import http
 from apistar.backends import SQLAlchemy
 from .models import Poll, Choice
@@ -38,3 +41,14 @@ def create_poll(db: SQLAlchemy, question: str):
 	session.commit()
 	return {'question': question}
 
+def polls(db: SQLAlchemy):
+	data = []
+	current_time = datetime.datetime.utcnow()
+	session = db.session_class()
+	polls = session.query(Poll).filter(Poll.pub_date < current_time)[:5]
+	for poll in polls:
+		poll_data = {}
+		poll_data['question'] = poll.question
+		poll_data['pub_date'] = str(poll.pub_date)
+		data.append(poll_data)
+	return {'polls': data}
