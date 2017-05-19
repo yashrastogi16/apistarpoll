@@ -1,38 +1,12 @@
 import datetime
-import json
-from json import JSONEncoder
 from apistar import http
 from apistar.backends import SQLAlchemy
 from .models import Poll, Choice
-
-# def show_request(request: http.Request):
-# 	return {
-# 		'method': request.method,
-# 		'url': request.url,
-# 		'headers': dict(request.headers)
-# 	}
-
-# def show_query_params(query_params: http.QueryParams):
-# 	return {
-# 		'params': dict(query_params)
-# 	}
-
-# def show_user_agent(user_agent: http.Header):
-# 	return {
-# 		'user-agent': user_agent
-# 	}
 
 def welcome(name=None):
 	if name is None:
 		return {'message': 'Welcome to API Star!'}
 	return {'message': 'Welcome to API Star, %s!' % name}
-
-# def create_customer(db: SQLAlchemy, name: str):
-# 	session = db.session_class()
-# 	customer = Customer(name=name)
-# 	session.add(customer)
-# 	session.commit()
-# 	return {'name': name}
 
 def create_poll(db: SQLAlchemy, question: str):
 	session = db.session_class()
@@ -52,3 +26,33 @@ def polls(db: SQLAlchemy):
 		poll_data['pub_date'] = str(poll.pub_date)
 		data.append(poll_data)
 	return {'polls': data}
+
+def polls_details(db: SQLAlchemy):
+	data = []
+	cdata = []
+	session = db.session_class()
+	polls = session.query(Poll).all()
+	for poll in polls:
+		poll_data = {}
+		poll_data['question'] = poll.question
+		poll_data['pub_date'] = str(poll.pub_date)
+		if poll.choice:
+			for choice in poll.choice:
+				choice_data = {}
+				choice_data['choice_text'] = choice.choice_text
+				choice_data['votes'] = choice.votes
+				cdata.append(choice_data)
+			poll_data['choice'] = cdata
+		data.append(poll_data)
+	return {'polls': data}
+
+def create_choices(db: SQLAlchemy, poll_id: int, choice_text: str):
+	session = db.session_class()
+	poll = session.query(Poll).get(poll_id)
+	choice = Choice(poll=poll.id, choice_text=choice_text, votes=0)
+	session.add(choice)
+	session.commit()
+	return {'choice_text': choice_text}
+
+
+
